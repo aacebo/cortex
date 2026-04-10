@@ -1,0 +1,17 @@
+[package]
+name = "cortex"
+version = "0.0.0"
+edition = "2024"
+license = "MIT"
+readme = "README.md"
+documentation = "https://www.github.com/aacebo/cortex"
+homepage = "https://www.github.com/aacebo/cortex"
+repository = "https://www.github.com/aacebo/cortex"
+
+[lib]
+doctest = false
+
+[dependencies]
+tch = "0.17"
+console = "0.16"
+rust-bert = "0.23"
