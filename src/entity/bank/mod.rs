@@ -8,6 +8,18 @@ use crate::entity;
 #[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct BankId(&'static str);
 
+impl BankId {
+    pub fn as_str(&self) -> &str {
+        self.0
+    }
+}
+
+impl std::fmt::Display for BankId {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.as_str())
+    }
+}
+
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum BankType {
     Central,

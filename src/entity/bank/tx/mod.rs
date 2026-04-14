@@ -9,6 +9,12 @@ pub use withdrawal::*;
 #[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct TxId(u64);
 
+impl std::fmt::Display for TxId {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.0)
+    }
+}
+
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum Tx {
     Deposit(Deposit),
