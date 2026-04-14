@@ -3,7 +3,7 @@ pub mod tx;
 
 use std::collections::BTreeMap;
 
-use crate::entity;
+use crate::*;
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct BankId(&'static str);
@@ -53,14 +53,44 @@ pub struct Bank {
     pub id: BankId,
 
     /// ex. J.P. Morgan Chase
-    pub name: &'static str,
+    pub name: String,
 
     /// the type of bank
     pub ty: BankType,
 
     /// reserves by currency in minor units
-    pub reserves: BTreeMap<entity::CurrencyId, i64>,
+    pub reserves: BTreeMap<CurrencyId, i64>,
 
     /// the banks accounts.
     pub accounts: BTreeMap<account::AccountId, account::Account>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum BankAction {
+    Create(CreateBankAction),
+    Delete(DeleteBankAction),
+}
+
+impl From<CreateBankAction> for BankAction {
+    fn from(value: CreateBankAction) -> Self {
+        Self::Create(value)
+    }
+}
+
+impl From<DeleteBankAction> for BankAction {
+    fn from(value: DeleteBankAction) -> Self {
+        Self::Delete(value)
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct CreateBankAction {
+    pub id: BankId,
+    pub name: String,
+    pub ty: BankType,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct DeleteBankAction {
+    pub id: BankId,
 }

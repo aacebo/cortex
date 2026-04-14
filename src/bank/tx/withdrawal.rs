@@ -1,4 +1,5 @@
-use crate::entity;
+use crate::bank::account;
+use crate::bank::tx;
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum WithdrawalStyle {
@@ -27,8 +28,8 @@ impl std::fmt::Display for WithdrawalStyle {
 /// Activities that decrease your account balance.
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub struct Withdrawal {
-    pub id: entity::tx::TxId,
-    pub account_id: entity::account::AccountId,
+    pub id: tx::TxId,
+    pub account_id: account::AccountId,
     pub style: WithdrawalStyle,
     pub amount: u64,
     pub created_at: chrono::DateTime<chrono::Utc>,

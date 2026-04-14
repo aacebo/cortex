@@ -1,14 +1,14 @@
 use std::collections::BTreeMap;
 
-use crate::{Tick, entity};
+use crate::*;
 
 #[derive(Debug, Default, Clone)]
 pub struct World {
     pub tick: Tick,
-    pub banks: BTreeMap<entity::BankId, entity::Bank>,
-    pub countries: BTreeMap<entity::CountryId, entity::Country>,
-    pub currencies: BTreeMap<entity::CurrencyId, entity::Currency>,
-    pub resources: BTreeMap<entity::ResourceId, entity::Resource>,
+    pub banks: BTreeMap<BankId, Bank>,
+    pub countries: BTreeMap<CountryId, Country>,
+    pub currencies: BTreeMap<CurrencyId, Currency>,
+    pub resources: BTreeMap<ResourceId, Resource>,
 }
 
 impl World {
@@ -22,35 +22,35 @@ impl World {
         next
     }
 
-    pub fn bank(&self, id: &entity::BankId) -> Option<&entity::Bank> {
+    pub fn bank(&self, id: &BankId) -> Option<&Bank> {
         self.banks.get(id)
     }
 
-    pub fn bank_mut(&mut self, id: &entity::BankId) -> Option<&mut entity::Bank> {
+    pub fn bank_mut(&mut self, id: &BankId) -> Option<&mut Bank> {
         self.banks.get_mut(id)
     }
 
-    pub fn country(&self, id: &entity::CountryId) -> Option<&entity::Country> {
+    pub fn country(&self, id: &CountryId) -> Option<&Country> {
         self.countries.get(id)
     }
 
-    pub fn country_mut(&mut self, id: &entity::CountryId) -> Option<&mut entity::Country> {
+    pub fn country_mut(&mut self, id: &CountryId) -> Option<&mut Country> {
         self.countries.get_mut(id)
     }
 
-    pub fn currency(&self, id: &entity::CurrencyId) -> Option<&entity::Currency> {
+    pub fn currency(&self, id: &CurrencyId) -> Option<&Currency> {
         self.currencies.get(id)
     }
 
-    pub fn currency_mut(&mut self, id: &entity::CurrencyId) -> Option<&mut entity::Currency> {
+    pub fn currency_mut(&mut self, id: &CurrencyId) -> Option<&mut Currency> {
         self.currencies.get_mut(id)
     }
 
-    pub fn resource(&self, id: &entity::ResourceId) -> Option<&entity::Resource> {
+    pub fn resource(&self, id: &ResourceId) -> Option<&Resource> {
         self.resources.get(id)
     }
 
-    pub fn resource_mut(&mut self, id: &entity::ResourceId) -> Option<&mut entity::Resource> {
+    pub fn resource_mut(&mut self, id: &ResourceId) -> Option<&mut Resource> {
         self.resources.get_mut(id)
     }
 }

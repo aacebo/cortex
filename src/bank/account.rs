@@ -1,6 +1,6 @@
 use std::collections::BTreeSet;
 
-use crate::entity;
+use crate::{Money, bank::tx};
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct AccountId(u64);
@@ -36,8 +36,8 @@ impl std::fmt::Display for AccountType {
 pub struct Account {
     pub id: AccountId,
     pub ty: AccountType,
-    pub balance: entity::Money,
-    pub ledger: BTreeSet<entity::tx::Tx>,
+    pub balance: Money,
+    pub ledger: BTreeSet<tx::Tx>,
     pub opened_at: chrono::DateTime<chrono::Utc>,
     pub closed_at: Option<chrono::DateTime<chrono::Utc>>,
 }

@@ -1,4 +1,4 @@
-use super::CurrencyId;
+use crate::currency::CurrencyId;
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub struct Money {

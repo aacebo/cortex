@@ -1,4 +1,5 @@
-use crate::entity;
+use crate::bank::account;
+use crate::bank::tx;
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum TransferStyle {
@@ -27,9 +28,9 @@ impl std::fmt::Display for TransferStyle {
 /// Activities that transfer money between accounts.
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub struct Transfer {
-    pub id: entity::tx::TxId,
-    pub account_id: entity::account::AccountId,
-    pub recipient_id: entity::account::AccountId,
+    pub id: tx::TxId,
+    pub account_id: account::AccountId,
+    pub recipient_id: account::AccountId,
     pub style: TransferStyle,
     pub amount: u64,
     pub created_at: chrono::DateTime<chrono::Utc>,
