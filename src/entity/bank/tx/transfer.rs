@@ -1,0 +1,36 @@
+use crate::entity;
+
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+pub enum TransferStyle {
+    /// Moving money between your own accounts at the same bank (e.g., from checking to savings).
+    Internal,
+
+    /// Moving money between your own accounts at the same bank (e.g., from checking to savings).
+    External,
+}
+
+impl TransferStyle {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Internal => "internal",
+            Self::External => "external",
+        }
+    }
+}
+
+impl std::fmt::Display for TransferStyle {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.as_str())
+    }
+}
+
+/// Activities that increase your account balance.
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+pub struct Transfer {
+    pub id: entity::tx::TxId,
+    pub account_id: entity::account::AccountId,
+    pub recipient_id: entity::account::AccountId,
+    pub style: TransferStyle,
+    pub ammount: u64,
+    pub created_at: chrono::Utc,
+}

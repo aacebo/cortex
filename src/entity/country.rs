@@ -1,4 +1,6 @@
-use crate::{Bank, Currency, Exchange};
+use std::collections::BTreeSet;
+
+use crate::entity;
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct CountryId(&'static str);
@@ -11,14 +13,9 @@ pub struct Country {
     /// ex. United States of America
     pub name: &'static str,
 
-    /// the countries official currency.
-    pub currency: Currency,
-
-    /// the exchange rates accepted
-    /// by the country for external
-    /// currencies.
-    pub exchange: Exchange,
-
     /// the banks of the country.
-    pub banks: Vec<Bank>,
+    pub banks: BTreeSet<entity::BankId>,
+
+    /// the countries official currency.
+    pub currencies: BTreeSet<entity::CurrencyId>,
 }

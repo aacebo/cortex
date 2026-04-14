@@ -1,13 +1,16 @@
-mod bank;
-mod country;
-mod currency;
-mod exchange;
-mod market;
-mod resource;
+mod engine;
+pub mod entity;
+mod tick;
+mod world;
 
-pub use bank::*;
-pub use country::*;
-pub use currency::*;
-pub use exchange::*;
-pub use market::*;
-pub use resource::*;
+pub use engine::*;
+pub use tick::*;
+pub use world::*;
+
+pub fn new() -> Engine {
+    Engine::new()
+}
+
+pub trait Layer {
+    fn run(&mut self, world: &mut World);
+}

@@ -12,6 +12,4 @@ repository = "https://www.github.com/aacebo/cortex"
 doctest = false
 
 [dependencies]
-tch = "0.17"
-console = "0.16"
-rust-bert = "0.23"
+chrono = "0.4"
