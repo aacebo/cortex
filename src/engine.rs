@@ -16,13 +16,13 @@ impl Engine {
         }
     }
 
-    pub fn with(mut self, layer: impl Layer + 'static) -> Self {
-        self.layers.push(Arc::new(layer));
+    pub fn with(mut self, effect: impl Layer + 'static) -> Self {
+        self.layers.push(Arc::new(effect));
         self
     }
 
-    pub fn push(&mut self, layer: impl Layer + 'static) {
-        self.layers.push(Arc::new(layer));
+    pub fn push(&mut self, effect: impl Layer + 'static) {
+        self.layers.push(Arc::new(effect));
     }
 
     pub fn run(&mut self) {
@@ -33,7 +33,7 @@ impl Engine {
         };
 
         for layer in &self.layers {
-            layer.run(&mut world);
+            layer.tick(&mut world);
         }
 
         self.history.push(world);

@@ -4,20 +4,16 @@ use crate::{Tick, entity};
 
 #[derive(Debug, Default, Clone)]
 pub struct World {
-    tick: Tick,
-    banks: BTreeMap<entity::BankId, entity::Bank>,
-    countries: BTreeMap<entity::CountryId, entity::Country>,
-    currencies: BTreeMap<entity::CurrencyId, entity::Currency>,
-    resources: BTreeMap<entity::ResourceId, entity::Resource>,
+    pub tick: Tick,
+    pub banks: BTreeMap<entity::BankId, entity::Bank>,
+    pub countries: BTreeMap<entity::CountryId, entity::Country>,
+    pub currencies: BTreeMap<entity::CurrencyId, entity::Currency>,
+    pub resources: BTreeMap<entity::ResourceId, entity::Resource>,
 }
 
 impl World {
     pub fn new() -> Self {
         Self::default()
-    }
-
-    pub fn tick(&self) -> &Tick {
-        &self.tick
     }
 
     pub fn next(&self) -> Self {
