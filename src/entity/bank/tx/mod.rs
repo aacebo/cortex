@@ -1,10 +1,10 @@
 mod deposit;
 mod transfer;
-mod withdrawl;
+mod withdrawal;
 
 pub use deposit::*;
 pub use transfer::*;
-pub use withdrawl::*;
+pub use withdrawal::*;
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct TxId(u64);
@@ -12,7 +12,7 @@ pub struct TxId(u64);
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum Tx {
     Deposit(Deposit),
-    Withdrawl(Withdrawl),
+    Withdrawal(Withdrawal),
     Transfer(Transfer),
 }
 
@@ -20,7 +20,7 @@ impl Tx {
     pub fn id(&self) -> TxId {
         match self {
             Self::Deposit(v) => v.id,
-            Self::Withdrawl(v) => v.id,
+            Self::Withdrawal(v) => v.id,
             Self::Transfer(v) => v.id,
         }
     }
@@ -28,23 +28,23 @@ impl Tx {
     pub fn account_id(&self) -> super::account::AccountId {
         match self {
             Self::Deposit(v) => v.account_id,
-            Self::Withdrawl(v) => v.account_id,
+            Self::Withdrawal(v) => v.account_id,
             Self::Transfer(v) => v.account_id,
         }
     }
 
-    pub fn ammount(&self) -> u64 {
+    pub fn amount(&self) -> u64 {
         match self {
-            Self::Deposit(v) => v.ammount,
-            Self::Withdrawl(v) => v.ammount,
-            Self::Transfer(v) => v.ammount,
+            Self::Deposit(v) => v.amount,
+            Self::Withdrawal(v) => v.amount,
+            Self::Transfer(v) => v.amount,
         }
     }
 
     pub fn created_at(&self) -> &chrono::DateTime<chrono::Utc> {
         match self {
             Self::Deposit(v) => &v.created_at,
-            Self::Withdrawl(v) => &v.created_at,
+            Self::Withdrawal(v) => &v.created_at,
             Self::Transfer(v) => &v.created_at,
         }
     }
@@ -56,9 +56,9 @@ impl Tx {
         }
     }
 
-    pub fn as_withdrawl(&self) -> Option<&Withdrawl> {
+    pub fn as_withdrawl(&self) -> Option<&Withdrawal> {
         match self {
-            Self::Withdrawl(v) => Some(v),
+            Self::Withdrawal(v) => Some(v),
             _ => None,
         }
     }
@@ -77,9 +77,9 @@ impl From<Deposit> for Tx {
     }
 }
 
-impl From<Withdrawl> for Tx {
-    fn from(value: Withdrawl) -> Self {
-        Self::Withdrawl(value)
+impl From<Withdrawal> for Tx {
+    fn from(value: Withdrawal) -> Self {
+        Self::Withdrawal(value)
     }
 }
 

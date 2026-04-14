@@ -30,6 +30,6 @@ pub struct Deposit {
     pub id: entity::tx::TxId,
     pub account_id: entity::account::AccountId,
     pub style: DepositStyle,
-    pub ammount: u64,
+    pub amount: u64,
     pub created_at: chrono::DateTime<chrono::Utc>,
 }

@@ -31,6 +31,6 @@ pub struct Transfer {
     pub account_id: entity::account::AccountId,
     pub recipient_id: entity::account::AccountId,
     pub style: TransferStyle,
-    pub ammount: u64,
+    pub amount: u64,
     pub created_at: chrono::DateTime<chrono::Utc>,
 }

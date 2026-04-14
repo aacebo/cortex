@@ -1,7 +1,7 @@
 use crate::entity;
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum WithdrawlStyle {
+pub enum WithdrawalStyle {
     /// Using a debit or credit card for in-person or online shopping.
     PointOfSale,
 
@@ -9,7 +9,7 @@ pub enum WithdrawlStyle {
     Mobile,
 }
 
-impl WithdrawlStyle {
+impl WithdrawalStyle {
     pub fn as_str(&self) -> &'static str {
         match self {
             Self::PointOfSale => "point-of-sale",
@@ -18,7 +18,7 @@ impl WithdrawlStyle {
     }
 }
 
-impl std::fmt::Display for WithdrawlStyle {
+impl std::fmt::Display for WithdrawalStyle {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{}", self.as_str())
     }
@@ -26,10 +26,10 @@ impl std::fmt::Display for WithdrawlStyle {
 
 /// Activities that decrease your account balance.
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub struct Withdrawl {
+pub struct Withdrawal {
     pub id: entity::tx::TxId,
     pub account_id: entity::account::AccountId,
-    pub style: WithdrawlStyle,
-    pub ammount: u64,
+    pub style: WithdrawalStyle,
+    pub amount: u64,
     pub created_at: chrono::DateTime<chrono::Utc>,
 }

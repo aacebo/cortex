@@ -35,5 +35,7 @@ impl Engine {
         for layer in &self.layers {
             layer.run(&mut world);
         }
+
+        self.history.push(world);
     }
 }
