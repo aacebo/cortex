@@ -9,3 +9,8 @@ pub struct Resource {
     /// ex. Gold, Silver, Coal
     pub name: &'static str,
 }
+
+pub const STEEL: Resource = Resource {
+    id: ResourceId("steel"),
+    name: "Steel",
+};

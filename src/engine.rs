@@ -26,13 +26,14 @@ impl Engine {
     }
 
     pub fn run(&mut self) {
-        let mut binding = self.history.last().cloned();
-        let mut world = binding.get_or_insert_default();
+        let mut world = if let Some(last) = self.history.last_mut() {
+            last.next()
+        } else {
+            World::default()
+        };
 
-        for mut layer in &mut self.layers {
-            if let Some(v) = Arc::get_mut(&mut layer) {
-                v.run(&mut world);
-            }
+        for layer in &self.layers {
+            layer.run(&mut world);
         }
     }
 }

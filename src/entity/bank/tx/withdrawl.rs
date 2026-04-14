@@ -24,12 +24,12 @@ impl std::fmt::Display for WithdrawlStyle {
     }
 }
 
-/// Activities that increase your account balance.
+/// Activities that decrease your account balance.
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub struct Withdrawl {
     pub id: entity::tx::TxId,
     pub account_id: entity::account::AccountId,
     pub style: WithdrawlStyle,
     pub ammount: u64,
-    pub created_at: chrono::Utc,
+    pub created_at: chrono::DateTime<chrono::Utc>,
 }

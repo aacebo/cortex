@@ -5,7 +5,7 @@ pub enum TransferStyle {
     /// Moving money between your own accounts at the same bank (e.g., from checking to savings).
     Internal,
 
-    /// Moving money between your own accounts at the same bank (e.g., from checking to savings).
+    /// Moving money between different financial institutions.
     External,
 }
 
@@ -24,7 +24,7 @@ impl std::fmt::Display for TransferStyle {
     }
 }
 
-/// Activities that increase your account balance.
+/// Activities that transfer money between accounts.
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub struct Transfer {
     pub id: entity::tx::TxId,
@@ -32,5 +32,5 @@ pub struct Transfer {
     pub recipient_id: entity::account::AccountId,
     pub style: TransferStyle,
     pub ammount: u64,
-    pub created_at: chrono::Utc,
+    pub created_at: chrono::DateTime<chrono::Utc>,
 }

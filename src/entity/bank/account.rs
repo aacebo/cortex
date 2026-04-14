@@ -32,6 +32,6 @@ pub struct Account {
     pub ty: AccountType,
     pub balance: entity::Money,
     pub ledger: BTreeSet<entity::tx::Tx>,
-    pub opened_at: chrono::Utc,
-    pub closed_at: Option<chrono::Utc>,
+    pub opened_at: chrono::DateTime<chrono::Utc>,
+    pub closed_at: Option<chrono::DateTime<chrono::Utc>>,
 }

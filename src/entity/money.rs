@@ -1,6 +1,6 @@
 use super::CurrencyId;
 
-#[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub struct Money {
     cid: CurrencyId,
     units: i64, // ex. cents

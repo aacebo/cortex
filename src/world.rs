@@ -20,9 +20,10 @@ impl World {
         &self.tick
     }
 
-    pub fn next(&mut self) -> &mut Self {
-        self.tick = self.tick.next();
-        self
+    pub fn next(&self) -> Self {
+        let mut next = self.clone();
+        next.tick = self.tick.next();
+        next
     }
 
     pub fn bank(&self, id: &entity::BankId) -> Option<&entity::Bank> {

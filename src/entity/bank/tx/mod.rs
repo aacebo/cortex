@@ -41,11 +41,11 @@ impl Tx {
         }
     }
 
-    pub fn created_at(&self) -> chrono::Utc {
+    pub fn created_at(&self) -> &chrono::DateTime<chrono::Utc> {
         match self {
-            Self::Deposit(v) => v.created_at,
-            Self::Withdrawl(v) => v.created_at,
-            Self::Transfer(v) => v.created_at,
+            Self::Deposit(v) => &v.created_at,
+            Self::Withdrawl(v) => &v.created_at,
+            Self::Transfer(v) => &v.created_at,
         }
     }
 
@@ -86,5 +86,17 @@ impl From<Withdrawl> for Tx {
 impl From<Transfer> for Tx {
     fn from(value: Transfer) -> Self {
         Self::Transfer(value)
+    }
+}
+
+impl std::cmp::Ord for Tx {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        self.partial_cmp(other).unwrap_or(std::cmp::Ordering::Equal)
+    }
+}
+
+impl std::cmp::PartialOrd for Tx {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        self.created_at().partial_cmp(other.created_at())
     }
 }

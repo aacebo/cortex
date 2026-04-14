@@ -31,5 +31,5 @@ pub struct Deposit {
     pub account_id: entity::account::AccountId,
     pub style: DepositStyle,
     pub ammount: u64,
-    pub created_at: chrono::Utc,
+    pub created_at: chrono::DateTime<chrono::Utc>,
 }

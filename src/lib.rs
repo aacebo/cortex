@@ -12,5 +12,5 @@ pub fn new() -> Engine {
 }
 
 pub trait Layer {
-    fn run(&mut self, world: &mut World);
+    fn run(&self, world: &mut World);
 }
