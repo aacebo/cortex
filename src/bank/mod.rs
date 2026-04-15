@@ -9,6 +9,10 @@ use crate::*;
 pub struct BankId(&'static str);
 
 impl BankId {
+    pub const fn new(id: &'static str) -> Self {
+        Self(id)
+    }
+
     pub fn as_str(&self) -> &str {
         self.0
     }
@@ -71,6 +75,16 @@ pub enum BankAction {
     Delete(DeleteBankAction),
 }
 
+impl BankAction {
+    pub fn to_action(self) -> Action {
+        self.into()
+    }
+
+    pub fn to_message(self) -> Message {
+        self.to_action().into()
+    }
+}
+
 impl From<CreateBankAction> for BankAction {
     fn from(value: CreateBankAction) -> Self {
         Self::Create(value)
@@ -97,13 +111,13 @@ pub struct DeleteBankAction {
 
 pub struct Banks<'a> {
     store: &'a mut BTreeMap<BankId, Bank>,
-    producer: mpsc::Sender<Action>,
+    producer: mpsc::Sender<Message>,
 }
 
 impl<'a> Banks<'a> {
     pub(crate) fn new(
         store: &'a mut BTreeMap<BankId, Bank>,
-        producer: mpsc::Sender<Action>,
+        producer: mpsc::Sender<Message>,
     ) -> Self {
         Self { store, producer }
     }
@@ -116,7 +130,20 @@ impl<'a> Banks<'a> {
         self.store.get_mut(id)
     }
 
-    pub fn dispatch(&mut self, action: BankAction) -> Result<(), mpsc::SendError<Action>> {
-        self.producer.send(action.into())
+    pub fn create(&mut self, id: BankId, name: impl Into<String>, ty: BankType) {
+        let _ = self.producer.send(
+            BankAction::from(CreateBankAction {
+                id,
+                name: name.into(),
+                ty,
+            })
+            .to_message(),
+        );
+    }
+
+    pub fn delete(&mut self, id: BankId) {
+        let _ = self
+            .producer
+            .send(BankAction::from(DeleteBankAction { id }).to_message());
     }
 }

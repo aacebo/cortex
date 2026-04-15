@@ -44,6 +44,16 @@ pub enum CountryAction {
     Delete(DeleteCountryAction),
 }
 
+impl CountryAction {
+    pub fn to_action(self) -> Action {
+        self.into()
+    }
+
+    pub fn to_message(self) -> Message {
+        self.to_action().into()
+    }
+}
+
 impl From<CreateCountryAction> for CountryAction {
     fn from(value: CreateCountryAction) -> Self {
         Self::Create(value)
@@ -69,13 +79,13 @@ pub struct DeleteCountryAction {
 
 pub struct Countries<'a> {
     store: &'a mut BTreeMap<CountryId, Country>,
-    producer: mpsc::Sender<Action>,
+    producer: mpsc::Sender<Message>,
 }
 
 impl<'a> Countries<'a> {
     pub(crate) fn new(
         store: &'a mut BTreeMap<CountryId, Country>,
-        producer: mpsc::Sender<Action>,
+        producer: mpsc::Sender<Message>,
     ) -> Self {
         Self { store, producer }
     }
@@ -88,7 +98,19 @@ impl<'a> Countries<'a> {
         self.store.get_mut(id)
     }
 
-    pub fn dispatch(&mut self, action: CountryAction) -> Result<(), mpsc::SendError<Action>> {
-        self.producer.send(action.into())
+    pub fn create(&mut self, id: CountryId, name: impl Into<String>) {
+        let _ = self.producer.send(
+            CountryAction::Create(CreateCountryAction {
+                id,
+                name: name.into(),
+            })
+            .to_message(),
+        );
+    }
+
+    pub fn delete(&mut self, id: CountryId) {
+        let _ = self
+            .producer
+            .send(CountryAction::from(DeleteCountryAction { id }).to_message());
     }
 }

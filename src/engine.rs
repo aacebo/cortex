@@ -1,12 +1,35 @@
 use std::sync::{Arc, mpsc};
 
-use crate::{Action, Context, Layer, Observer, Snapshot, Tick, World};
+use crate::{
+    Action, Clock, Command, Context, Layer, Observer, Shutdown, Snapshot, SystemClock, Tick,
+    TickRate, World,
+};
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum Message {
+    Action(Action),
+    Command(Command),
+}
+
+impl From<Action> for Message {
+    fn from(value: Action) -> Self {
+        Self::Action(value)
+    }
+}
+
+impl From<Command> for Message {
+    fn from(value: Command) -> Self {
+        Self::Command(value)
+    }
+}
 
 pub struct EngineBuilder {
     tick: Tick,
     world: World,
     layers: Vec<Arc<dyn Layer>>,
     observers: Vec<Arc<dyn Observer>>,
+    clock: Box<dyn Clock>,
+    rate: Option<TickRate>,
 }
 
 impl EngineBuilder {
@@ -16,6 +39,8 @@ impl EngineBuilder {
             world: World::default(),
             layers: vec![],
             observers: vec![],
+            clock: Box::new(SystemClock::new()),
+            rate: None,
         }
     }
 
@@ -35,6 +60,16 @@ impl EngineBuilder {
         self
     }
 
+    pub fn clock(mut self, clock: impl Clock + 'static) -> Self {
+        self.clock = Box::new(clock);
+        self
+    }
+
+    pub fn rate(mut self, rate: TickRate) -> Self {
+        self.rate = Some(rate);
+        self
+    }
+
     pub fn build(self) -> Engine {
         let (producer, consumer) = mpsc::channel();
 
@@ -45,6 +80,9 @@ impl EngineBuilder {
             world: self.world,
             producer,
             consumer,
+            clock: self.clock,
+            rate: self.rate,
+            tick_started_at: None,
         }
     }
 }
@@ -52,43 +90,67 @@ impl EngineBuilder {
 pub struct Engine {
     tick: Tick,
     world: World,
+    clock: Box<dyn Clock>,
+    rate: Option<TickRate>,
+    tick_started_at: Option<chrono::DateTime<chrono::Utc>>,
     layers: Vec<Arc<dyn Layer>>,
     observers: Vec<Arc<dyn Observer>>,
-    producer: mpsc::Sender<Action>,
-    consumer: mpsc::Receiver<Action>,
+    producer: mpsc::Sender<Message>,
+    consumer: mpsc::Receiver<Message>,
 }
 
 impl Engine {
-    pub fn start(&mut self) {
-        loop {
-            self.next();
-        }
+    pub fn tick(&self) -> Tick {
+        self.tick
     }
 
-    pub fn next(&mut self) -> Snapshot<World> {
-        self.tick = self.tick.next();
-        let started_at = chrono::Utc::now();
-        let mut ctx = Context::new(&mut self.world, self.producer.clone());
+    pub fn world(&self) -> &World {
+        &self.world
+    }
 
-        for layer in &self.layers {
-            layer.on_tick(&mut ctx);
-
-            while let Ok(action) = self.consumer.try_recv() {
-                for observer in &self.observers {
-                    observer.on_action(&mut ctx, &action);
-                }
-
-                if let Action::Shutdown(a) = action {
-                    std::process::exit(a.code());
-                }
-            }
-        }
+    pub fn snapshot(&self) -> Snapshot<World> {
+        let ts = self.tick_started_at.unwrap_or_else(|| self.clock.now());
 
         Snapshot {
             tick: self.tick,
             data: self.world.clone(),
-            started_at,
-            ended_at: chrono::Utc::now(),
+            started_at: ts,
+            ended_at: self.clock.now(),
         }
+    }
+
+    pub fn run(&mut self) -> Shutdown {
+        loop {
+            match self.next() {
+                None => self.clock.wait_until_next_tick(self.rate),
+                Some(cmd) => match cmd {
+                    Command::Shutdown(v) => return Shutdown::Requested(v),
+                },
+            };
+        }
+    }
+
+    pub fn next(&mut self) -> Option<Command> {
+        self.tick = self.tick.next();
+        self.tick_started_at = Some(self.clock.now());
+
+        let mut ctx = Context::new(&mut self.world, self.producer.clone());
+
+        for layer in &self.layers {
+            layer.on_tick(&mut ctx);
+        }
+
+        while let Ok(message) = self.consumer.try_recv() {
+            match message {
+                Message::Command(cmd) => return Some(cmd),
+                Message::Action(action) => {
+                    for observer in &self.observers {
+                        observer.on_action(&mut ctx, &action);
+                    }
+                }
+            };
+        }
+
+        None
     }
 }
