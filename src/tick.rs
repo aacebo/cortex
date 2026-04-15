@@ -12,8 +12,3 @@ impl std::fmt::Display for Tick {
         write!(f, "{}", self.0)
     }
 }
-
-#[derive(Debug, Clone)]
-pub enum TickOutcome {
-    Continue,
-}
