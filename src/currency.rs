@@ -64,7 +64,7 @@ impl std::fmt::Display for ExchangeRateStyle {
             "{}",
             match self {
                 Self::Floating => "floating".to_string(),
-                Self::Pegged(v) => format!("pegged({})", v),
+                Self::Pegged(v) => format!("pegged@{}", v),
                 Self::ManagedFloat => "managed-float".to_string(),
                 Self::CapitalControlled => "capital-controlled".to_string(),
             }

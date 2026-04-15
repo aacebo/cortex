@@ -7,7 +7,7 @@ mod engine;
 mod entity;
 mod money;
 pub mod resource;
-mod tick;
+mod snapshot;
 mod world;
 
 pub use action::*;
@@ -19,7 +19,7 @@ pub use engine::*;
 pub use entity::Entity;
 pub use money::Money;
 pub use resource::{Resource, ResourceId};
-pub use tick::*;
+pub use snapshot::*;
 pub use world::*;
 
 pub fn new() -> EngineBuilder {

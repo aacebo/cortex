@@ -29,7 +29,7 @@ impl std::fmt::Display for TransferStyle {
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub struct Transfer {
     pub id: tx::TxId,
-    pub account_id: account::AccountId,
+    pub sender_id: account::AccountId,
     pub recipient_id: account::AccountId,
     pub style: TransferStyle,
     pub amount: u64,

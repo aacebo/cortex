@@ -4,14 +4,8 @@ use crate::*;
 
 #[derive(Debug, Default, Clone)]
 pub struct World {
-    pub banks: BTreeMap<BankId, Bank>,
-    pub countries: BTreeMap<CountryId, Country>,
-    pub currencies: BTreeMap<CurrencyId, Currency>,
-    pub resources: BTreeMap<ResourceId, Resource>,
-}
-
-impl World {
-    pub fn new() -> Self {
-        Self::default()
-    }
+    pub(crate) banks: BTreeMap<BankId, Bank>,
+    pub(crate) countries: BTreeMap<CountryId, Country>,
+    pub(crate) currencies: BTreeMap<CurrencyId, Currency>,
+    pub(crate) resources: BTreeMap<ResourceId, Resource>,
 }

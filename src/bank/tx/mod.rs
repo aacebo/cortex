@@ -35,7 +35,7 @@ impl Tx {
         match self {
             Self::Deposit(v) => v.account_id,
             Self::Withdrawal(v) => v.account_id,
-            Self::Transfer(v) => v.account_id,
+            Self::Transfer(v) => v.sender_id,
         }
     }
 
@@ -62,7 +62,7 @@ impl Tx {
         }
     }
 
-    pub fn as_withdrawl(&self) -> Option<&Withdrawal> {
+    pub fn as_withdrawal(&self) -> Option<&Withdrawal> {
         match self {
             Self::Withdrawal(v) => Some(v),
             _ => None,
