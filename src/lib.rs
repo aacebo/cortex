@@ -1,5 +1,6 @@
 mod action;
 pub mod bank;
+mod context;
 pub mod country;
 pub mod currency;
 mod engine;
@@ -11,6 +12,7 @@ mod world;
 
 pub use action::*;
 pub use bank::{Bank, BankId};
+pub use context::*;
 pub use country::{Country, CountryId};
 pub use currency::{Currency, CurrencyId};
 pub use engine::*;
@@ -20,12 +22,12 @@ pub use resource::{Resource, ResourceId};
 pub use tick::*;
 pub use world::*;
 
-pub fn new() -> Engine {
-    Engine::new()
+pub fn new() -> EngineBuilder {
+    EngineBuilder::new()
 }
 
 pub trait Layer {
-    fn tick(&self, world: &mut World);
+    fn tick(&self, ctx: &mut Context);
 }
 
 /// ## Effect
@@ -35,38 +37,38 @@ pub trait Layer {
 pub trait Effect {
     #![allow(unused_variables)]
 
-    fn on_action(&self, world: &mut World, action: &Action) {
+    fn on_action(&self, ctx: &mut Context, action: &Action) {
         match action {
-            Action::Bank(a) => self.on_bank_action(world, a),
-            Action::Country(a) => self.on_country_action(world, a),
-            Action::Currency(a) => self.on_currency_action(world, a),
+            Action::Bank(a) => self.on_bank_action(ctx, a),
+            Action::Country(a) => self.on_country_action(ctx, a),
+            Action::Currency(a) => self.on_currency_action(ctx, a),
         }
     }
 
-    fn on_bank_create(&self, world: &mut World, action: &bank::CreateBankAction) {}
-    fn on_bank_delete(&self, world: &mut World, action: &bank::DeleteBankAction) {}
-    fn on_bank_action(&self, world: &mut World, action: &bank::BankAction) {
+    fn on_bank_create(&self, ctx: &mut Context, action: &bank::CreateBankAction) {}
+    fn on_bank_delete(&self, ctx: &mut Context, action: &bank::DeleteBankAction) {}
+    fn on_bank_action(&self, ctx: &mut Context, action: &bank::BankAction) {
         match action {
-            bank::BankAction::Create(a) => self.on_bank_create(world, a),
-            bank::BankAction::Delete(a) => self.on_bank_delete(world, a),
+            bank::BankAction::Create(a) => self.on_bank_create(ctx, a),
+            bank::BankAction::Delete(a) => self.on_bank_delete(ctx, a),
         }
     }
 
-    fn on_country_create(&self, world: &mut World, action: &country::CreateCountryAction) {}
-    fn on_country_delete(&self, world: &mut World, action: &country::DeleteCountryAction) {}
-    fn on_country_action(&self, world: &mut World, action: &country::CountryAction) {
+    fn on_country_create(&self, ctx: &mut Context, action: &country::CreateCountryAction) {}
+    fn on_country_delete(&self, ctx: &mut Context, action: &country::DeleteCountryAction) {}
+    fn on_country_action(&self, ctx: &mut Context, action: &country::CountryAction) {
         match action {
-            country::CountryAction::Create(a) => self.on_country_create(world, a),
-            country::CountryAction::Delete(a) => self.on_country_delete(world, a),
+            country::CountryAction::Create(a) => self.on_country_create(ctx, a),
+            country::CountryAction::Delete(a) => self.on_country_delete(ctx, a),
         }
     }
 
-    fn on_currency_create(&self, world: &mut World, action: &currency::CreateCurrencyAction) {}
-    fn on_currency_delete(&self, world: &mut World, action: &currency::DeleteCurrencyAction) {}
-    fn on_currency_action(&self, world: &mut World, action: &currency::CurrencyAction) {
+    fn on_currency_create(&self, ctx: &mut Context, action: &currency::CreateCurrencyAction) {}
+    fn on_currency_delete(&self, ctx: &mut Context, action: &currency::DeleteCurrencyAction) {}
+    fn on_currency_action(&self, ctx: &mut Context, action: &currency::CurrencyAction) {
         match action {
-            currency::CurrencyAction::Create(a) => self.on_currency_create(world, a),
-            currency::CurrencyAction::Delete(a) => self.on_currency_delete(world, a),
+            currency::CurrencyAction::Create(a) => self.on_currency_create(ctx, a),
+            currency::CurrencyAction::Delete(a) => self.on_currency_delete(ctx, a),
         }
     }
 }

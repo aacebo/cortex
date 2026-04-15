@@ -1,4 +1,7 @@
-use std::collections::BTreeSet;
+use std::{
+    collections::{BTreeMap, BTreeSet},
+    sync::mpsc,
+};
 
 use crate::*;
 
@@ -62,4 +65,30 @@ pub struct CreateCountryAction {
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct DeleteCountryAction {
     pub id: CountryId,
+}
+
+pub struct Countries<'a> {
+    store: &'a mut BTreeMap<CountryId, Country>,
+    producer: mpsc::Sender<Action>,
+}
+
+impl<'a> Countries<'a> {
+    pub(crate) fn new(
+        store: &'a mut BTreeMap<CountryId, Country>,
+        producer: mpsc::Sender<Action>,
+    ) -> Self {
+        Self { store, producer }
+    }
+
+    pub fn get(&self, id: &CountryId) -> Option<&Country> {
+        self.store.get(id)
+    }
+
+    pub fn get_mut(&mut self, id: &CountryId) -> Option<&mut Country> {
+        self.store.get_mut(id)
+    }
+
+    pub fn dispatch(&mut self, action: CountryAction) -> Result<(), mpsc::SendError<Action>> {
+        self.producer.send(action.into())
+    }
 }

@@ -1,7 +1,7 @@
 pub mod account;
 pub mod tx;
 
-use std::collections::BTreeMap;
+use std::{collections::BTreeMap, sync::mpsc};
 
 use crate::*;
 
@@ -93,4 +93,30 @@ pub struct CreateBankAction {
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct DeleteBankAction {
     pub id: BankId,
+}
+
+pub struct Banks<'a> {
+    store: &'a mut BTreeMap<BankId, Bank>,
+    producer: mpsc::Sender<Action>,
+}
+
+impl<'a> Banks<'a> {
+    pub(crate) fn new(
+        store: &'a mut BTreeMap<BankId, Bank>,
+        producer: mpsc::Sender<Action>,
+    ) -> Self {
+        Self { store, producer }
+    }
+
+    pub fn get(&self, id: &BankId) -> Option<&Bank> {
+        self.store.get(id)
+    }
+
+    pub fn get_mut(&mut self, id: &BankId) -> Option<&mut Bank> {
+        self.store.get_mut(id)
+    }
+
+    pub fn dispatch(&mut self, action: BankAction) -> Result<(), mpsc::SendError<Action>> {
+        self.producer.send(action.into())
+    }
 }
