@@ -26,15 +26,16 @@ pub fn new() -> EngineBuilder {
     EngineBuilder::new()
 }
 
+/// A system layer that gets executed with every tick
+/// and typically transforms world state.
 pub trait Layer: Send + Sync {
-    fn tick(&self, ctx: &mut Context);
+    fn on_tick(&self, ctx: &mut Context);
 }
 
-/// ## Effect
 /// When implemented a type can listen
 /// to world/engine events and optionally
 /// make changes to the world based on said events.
-pub trait Effect: Send + Sync {
+pub trait Observer: Send + Sync {
     #![allow(unused_variables)]
 
     fn on_shutdown(&self, ctx: &mut Context, action: &ShutdownAction) {}

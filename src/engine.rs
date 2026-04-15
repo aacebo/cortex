@@ -1,12 +1,12 @@
 use std::sync::{Arc, mpsc};
 
-use crate::{Action, Context, Effect, Layer, Snapshot, Tick, World};
+use crate::{Action, Context, Layer, Observer, Snapshot, Tick, World};
 
 pub struct EngineBuilder {
     tick: Tick,
     world: World,
     layers: Vec<Arc<dyn Layer>>,
-    effects: Vec<Arc<dyn Effect>>,
+    observers: Vec<Arc<dyn Observer>>,
 }
 
 impl EngineBuilder {
@@ -15,7 +15,7 @@ impl EngineBuilder {
             tick: Tick::default(),
             world: World::default(),
             layers: vec![],
-            effects: vec![],
+            observers: vec![],
         }
     }
 
@@ -30,8 +30,8 @@ impl EngineBuilder {
         self
     }
 
-    pub fn effect(mut self, effect: impl Effect + 'static) -> Self {
-        self.effects.push(Arc::new(effect));
+    pub fn observer(mut self, observer: impl Observer + 'static) -> Self {
+        self.observers.push(Arc::new(observer));
         self
     }
 
@@ -41,7 +41,7 @@ impl EngineBuilder {
         Engine {
             tick: self.tick,
             layers: self.layers,
-            effects: self.effects,
+            observers: self.observers,
             world: self.world,
             producer,
             consumer,
@@ -51,25 +51,31 @@ impl EngineBuilder {
 
 pub struct Engine {
     tick: Tick,
-    layers: Vec<Arc<dyn Layer>>,
-    effects: Vec<Arc<dyn Effect>>,
     world: World,
+    layers: Vec<Arc<dyn Layer>>,
+    observers: Vec<Arc<dyn Observer>>,
     producer: mpsc::Sender<Action>,
     consumer: mpsc::Receiver<Action>,
 }
 
 impl Engine {
+    pub fn start(&mut self) {
+        loop {
+            self.next();
+        }
+    }
+
     pub fn next(&mut self) -> Snapshot<World> {
         self.tick = self.tick.next();
         let started_at = chrono::Utc::now();
         let mut ctx = Context::new(&mut self.world, self.producer.clone());
 
         for layer in &self.layers {
-            layer.tick(&mut ctx);
+            layer.on_tick(&mut ctx);
 
             while let Ok(action) = self.consumer.try_recv() {
-                for effect in &self.effects {
-                    effect.on_action(&mut ctx, &action);
+                for observer in &self.observers {
+                    observer.on_action(&mut ctx, &action);
                 }
 
                 if let Action::Shutdown(a) = action {
