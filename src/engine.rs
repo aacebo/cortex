@@ -1,8 +1,10 @@
 use std::sync::{Arc, mpsc};
 
-use crate::{Action, Context, Effect, Layer, World};
+use crate::{Action, Context, Effect, Layer, Snapshot, Tick, World};
 
 pub struct EngineBuilder {
+    tick: Tick,
+    world: World,
     layers: Vec<Arc<dyn Layer>>,
     effects: Vec<Arc<dyn Effect>>,
 }
@@ -10,9 +12,17 @@ pub struct EngineBuilder {
 impl EngineBuilder {
     pub(crate) fn new() -> Self {
         Self {
+            tick: Tick::default(),
+            world: World::default(),
             layers: vec![],
             effects: vec![],
         }
+    }
+
+    pub fn restore(mut self, snapshot: Snapshot<World>) -> Self {
+        self.tick = snapshot.tick;
+        self.world = snapshot.data;
+        self
     }
 
     pub fn layer(mut self, layer: impl Layer + 'static) -> Self {
@@ -29,9 +39,10 @@ impl EngineBuilder {
         let (producer, consumer) = mpsc::channel();
 
         Engine {
+            tick: self.tick,
             layers: self.layers,
             effects: self.effects,
-            history: vec![],
+            world: self.world,
             producer,
             consumer,
         }
@@ -39,27 +50,39 @@ impl EngineBuilder {
 }
 
 pub struct Engine {
+    tick: Tick,
     layers: Vec<Arc<dyn Layer>>,
     effects: Vec<Arc<dyn Effect>>,
-    history: Vec<World>,
+    world: World,
     producer: mpsc::Sender<Action>,
     consumer: mpsc::Receiver<Action>,
 }
 
 impl Engine {
-    pub fn run(&mut self) {
-        let mut world = if let Some(last) = self.history.last_mut() {
-            last.next()
-        } else {
-            World::default()
-        };
-
-        let mut context = Context::new(&mut world, self.producer.clone());
+    pub fn next(&mut self) -> Snapshot<World> {
+        self.tick = self.tick.next();
+        let started_at = chrono::Utc::now();
+        let mut ctx = Context::new(&mut self.world, self.producer.clone());
 
         for layer in &self.layers {
-            layer.tick(&mut context);
+            layer.tick(&mut ctx);
+
+            while let Ok(action) = self.consumer.try_recv() {
+                for effect in &self.effects {
+                    effect.on_action(&mut ctx, &action);
+                }
+
+                if let Action::Shutdown(a) = action {
+                    std::process::exit(a.code());
+                }
+            }
         }
 
-        self.history.push(world);
+        Snapshot {
+            tick: self.tick,
+            data: self.world.clone(),
+            started_at,
+            ended_at: chrono::Utc::now(),
+        }
     }
 }

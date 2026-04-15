@@ -26,7 +26,7 @@ pub fn new() -> EngineBuilder {
     EngineBuilder::new()
 }
 
-pub trait Layer {
+pub trait Layer: Send + Sync {
     fn tick(&self, ctx: &mut Context);
 }
 
@@ -34,11 +34,13 @@ pub trait Layer {
 /// When implemented a type can listen
 /// to world/engine events and optionally
 /// make changes to the world based on said events.
-pub trait Effect {
+pub trait Effect: Send + Sync {
     #![allow(unused_variables)]
 
+    fn on_shutdown(&self, ctx: &mut Context, action: &ShutdownAction) {}
     fn on_action(&self, ctx: &mut Context, action: &Action) {
         match action {
+            Action::Shutdown(a) => self.on_shutdown(ctx, a),
             Action::Bank(a) => self.on_bank_action(ctx, a),
             Action::Country(a) => self.on_country_action(ctx, a),
             Action::Currency(a) => self.on_currency_action(ctx, a),
