@@ -2,7 +2,7 @@ use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
 
-use cortex::prelude::*;
+use fsim::prelude::*;
 
 struct ShutdownLayer(Mutex<Option<ShutdownRequest>>);
 
@@ -72,7 +72,7 @@ impl Observer for BankCreateCounter {
 
 #[test]
 fn shutdown_returns_reason_instead_of_exiting() {
-    let mut engine = cortex::new()
+    let mut engine = fsim::new()
         .layer(ShutdownLayer::new(ShutdownRequest::Success))
         .build();
 
@@ -88,7 +88,7 @@ fn shutdown_returns_reason_instead_of_exiting() {
 #[test]
 fn shutdown_preserves_internal_error_payload() {
     let a = ShutdownRequest::InternalError("db down".into());
-    let mut engine = cortex::new().layer(ShutdownLayer::new(a.clone())).build();
+    let mut engine = fsim::new().layer(ShutdownLayer::new(a.clone())).build();
 
     match engine.run() {
         Shutdown::Requested(r) => assert_eq!(r, a),
@@ -98,7 +98,7 @@ fn shutdown_preserves_internal_error_payload() {
 
 #[test]
 fn manual_step_does_not_clone_world_until_snapshot() {
-    let mut engine = cortex::new().layer(NoopLayer).build();
+    let mut engine = fsim::new().layer(NoopLayer).build();
     assert!(engine.next().is_none());
     let snap = engine.snapshot();
     assert_eq!(snap.tick, engine.tick());
@@ -107,7 +107,7 @@ fn manual_step_does_not_clone_world_until_snapshot() {
 #[test]
 fn manual_clock_advances_between_ticks() {
     let start = chrono::DateTime::UNIX_EPOCH;
-    let mut engine = cortex::new()
+    let mut engine = fsim::new()
         .layer(CountingLayer::new())
         .clock(ManualClock::new(start))
         .rate(TickRate::Interval(Duration::from_secs(1)))
@@ -135,7 +135,7 @@ fn tick_rate_hz_maps_to_interval() {
 #[test]
 fn ctx_banks_create_enqueues_action() {
     let count = Arc::new(AtomicUsize::new(0));
-    let mut engine = cortex::new()
+    let mut engine = fsim::new()
         .layer(SeedBankLayer::new())
         .layer(ShutdownLayer::new(ShutdownRequest::Success))
         .observer(BankCreateCounter(count.clone()))
@@ -150,7 +150,7 @@ fn ctx_banks_create_enqueues_action() {
 
 #[test]
 fn next_returns_shutdown_command() {
-    let mut engine = cortex::new()
+    let mut engine = fsim::new()
         .layer(ShutdownLayer::new(ShutdownRequest::Success))
         .build();
 

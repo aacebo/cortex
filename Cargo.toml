@@ -1,12 +1,12 @@
 [package]
-name = "cortex"
+name = "fsim"
 version = "0.0.0"
 edition = "2024"
 license = "MIT"
 readme = "README.md"
-documentation = "https://www.github.com/aacebo/cortex"
-homepage = "https://www.github.com/aacebo/cortex"
-repository = "https://www.github.com/aacebo/cortex"
+documentation = "https://www.github.com/aacebo/fsim"
+homepage = "https://www.github.com/aacebo/fsim"
+repository = "https://www.github.com/aacebo/fsim"
 
 [lib]
 doctest = false

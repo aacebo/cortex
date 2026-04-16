@@ -1,3 +1,3 @@
-# Cortex
+# FSim
 
 International economic simulator.
