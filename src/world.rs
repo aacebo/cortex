@@ -1,6 +1,6 @@
 use std::collections::BTreeMap;
 
-use crate::*;
+use crate::prelude::*;
 
 #[derive(Debug, Default, Clone)]
 pub struct World {

@@ -1,6 +1,6 @@
 use std::{collections::BTreeMap, sync::mpsc};
 
-use crate::*;
+use crate::prelude::*;
 
 pub struct Banks<'a> {
     store: &'a mut BTreeMap<BankId, Bank>,

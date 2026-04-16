@@ -3,7 +3,7 @@ pub mod tx;
 
 use std::collections::BTreeMap;
 
-use crate::*;
+use crate::prelude::*;
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct BankId(&'static str);

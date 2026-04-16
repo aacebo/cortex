@@ -2,7 +2,7 @@ use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
 
-use cortex::{Command, Context, Layer, ManualClock, Observer, Shutdown, ShutdownRequest, TickRate};
+use cortex::prelude::*;
 
 struct ShutdownLayer(Mutex<Option<ShutdownRequest>>);
 
@@ -40,11 +40,8 @@ impl SeedBankLayer {
 impl Layer for SeedBankLayer {
     fn on_tick(&self, ctx: &mut Context) {
         if !self.fired.swap(true, Ordering::SeqCst) {
-            ctx.banks.create(
-                cortex::BankId::new("jpm"),
-                "JPM",
-                cortex::BankType::Commercial,
-            );
+            ctx.banks
+                .create(BankId::new("jpm"), "JPM", BankType::Commercial);
         }
     }
 }
@@ -68,7 +65,7 @@ impl Layer for CountingLayer {
 
 struct BankCreateCounter(Arc<AtomicUsize>);
 impl Observer for BankCreateCounter {
-    fn on_bank_create(&self, _ctx: &mut Context, _action: &cortex::CreateBankAction) {
+    fn on_bank_create(&self, _ctx: &mut Context, _action: &CreateBankAction) {
         self.0.fetch_add(1, Ordering::SeqCst);
     }
 }
