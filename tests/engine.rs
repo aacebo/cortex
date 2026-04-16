@@ -36,6 +36,7 @@ impl SeedBankLayer {
         }
     }
 }
+
 impl Layer for SeedBankLayer {
     fn on_tick(&self, ctx: &mut Context) {
         if !self.fired.swap(true, Ordering::SeqCst) {
@@ -49,11 +50,13 @@ impl Layer for SeedBankLayer {
 }
 
 struct CountingLayer(AtomicUsize);
+
 impl CountingLayer {
     fn new() -> Self {
         Self(AtomicUsize::new(0))
     }
 }
+
 impl Layer for CountingLayer {
     fn on_tick(&self, ctx: &mut Context) {
         let n = self.0.fetch_add(1, Ordering::SeqCst);
