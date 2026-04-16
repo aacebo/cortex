@@ -1,4 +1,10 @@
-use crate::{bank, country, currency};
+mod bank;
+mod country;
+mod currency;
+
+pub use bank::*;
+pub use country::*;
+pub use currency::*;
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum Action {

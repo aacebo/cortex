@@ -43,7 +43,7 @@ impl Layer for SeedBankLayer {
             ctx.banks.create(
                 cortex::BankId::new("jpm"),
                 "JPM",
-                cortex::bank::BankType::Commercial,
+                cortex::BankType::Commercial,
             );
         }
     }
@@ -68,7 +68,7 @@ impl Layer for CountingLayer {
 
 struct BankCreateCounter(Arc<AtomicUsize>);
 impl Observer for BankCreateCounter {
-    fn on_bank_create(&self, _ctx: &mut Context, _action: &cortex::bank::CreateBankAction) {
+    fn on_bank_create(&self, _ctx: &mut Context, _action: &cortex::CreateBankAction) {
         self.0.fetch_add(1, Ordering::SeqCst);
     }
 }

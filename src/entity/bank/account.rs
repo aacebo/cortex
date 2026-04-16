@@ -1,6 +1,8 @@
 use std::collections::BTreeSet;
 
-use crate::{Money, bank::tx};
+use crate::Money;
+
+use super::tx;
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct AccountId(u64);

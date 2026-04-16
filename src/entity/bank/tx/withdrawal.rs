@@ -1,36 +1,36 @@
-use crate::bank::account;
-use crate::bank::tx;
+use super::super::account;
+use super::TxId;
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum DepositStyle {
-    /// Automated transfers, often used for paychecks or government benefits.
-    Direct,
+pub enum WithdrawalStyle {
+    /// Using a debit or credit card for in-person or online shopping.
+    PointOfSale,
 
-    /// Adding funds via checks (scanned by phone) or cash at a physical machine.
+    /// Taking out physical cash from your account.
     Mobile,
 }
 
-impl DepositStyle {
+impl WithdrawalStyle {
     pub fn as_str(&self) -> &'static str {
         match self {
-            Self::Direct => "direct",
+            Self::PointOfSale => "point-of-sale",
             Self::Mobile => "mobile",
         }
     }
 }
 
-impl std::fmt::Display for DepositStyle {
+impl std::fmt::Display for WithdrawalStyle {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{}", self.as_str())
     }
 }
 
-/// Activities that increase your account balance.
+/// Activities that decrease your account balance.
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub struct Deposit {
-    pub id: tx::TxId,
+pub struct Withdrawal {
+    pub id: TxId,
     pub account_id: account::AccountId,
-    pub style: DepositStyle,
+    pub style: WithdrawalStyle,
     pub amount: u64,
     pub created_at: chrono::DateTime<chrono::Utc>,
 }
